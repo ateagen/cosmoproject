@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Form Pendaftaran Kelas Bahasa Inggris</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #74ebd5, #ACB6E5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .form-container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 400px;
+    }
+    .form-container h2 {
+      text-align: center;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: bold;
+      color: #444;
+    }
+    input, select, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .popup {
+      display: none;
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 25px 35px;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+      z-index: 999;
+      text-align: center;
+      font-size: 18px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+<div class="form-container">
+  <h2>Form Pendaftaran</h2>
+  <form id="form-pendaftaran">
+    <label>Nama:</label>
+    <input type="text" name="nama" required>
+
+    <label>Alamat:</label>
+    <textarea name="alamat" required></textarea>
+
+    <label>Kelas:</label>
+    <select name="kelas" required>
+      <option value="">-- Pilih --</option>
+      <option value="Online">Online</option>
+      <option value="Offline">Offline</option>
+    </select>
+
+    <label>Kebutuhan:</label>
+    <input type="text" name="kebutuhan" required placeholder="Contoh: TOEFL, sekolah, pekerjaan">
+
+    <label>No WA:</label>
+    <input type="tel" name="no_wa" required placeholder="08xxxxxxxxxx">
+
+    <button type="submit">Daftar</button>
+  </form>
+</div>
+
+<div class="popup" id="popup-message">
+  Terima kasih telah mendaftar di kelas Bahasa Inggris Cosmo, anda akan segera dihubungi oleh tim kami.
+</div>
+
+<script>
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbywo2WXyF5HUGm_vG07sRFN1uroIkayMzywNm6kpxxli67I_hIe0Ainrop-f6hvBI6d/exec';
+  const form = document.getElementById('form-pendaftaran');
+  const popup = document.getElementById('popup-message');
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const formData = new FormData(form);
+
+    fetch(scriptURL, { method: 'POST', body: formData })
+      .then(response => {
+        form.reset();
+        popup.style.display = 'block';
+
+        setTimeout(() => {
+          popup.style.display = 'none';
+          window.location.href = 'index.html';
+        }, 4000);
+      })
+      .catch(error => alert('Gagal mengirim data'));
+  });
+</script>
+
+</body>
+</html>

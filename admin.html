@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin - Data Pendaftaran</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 12px 16px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+
+    th {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    button {
+      padding: 6px 10px;
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #c0392b;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    .top-bar button {
+      background-color: #3498db;
+    }
+
+    .top-bar button.delete-all {
+      background-color: #e67e22;
+    }
+
+    .top-bar button:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Data Pendaftaran Kelas Bahasa Inggris</h2>
+
+  <div class="top-bar">
+    <button onclick="downloadSheet()">Download Google Sheet</button>
+    <button class="delete-all" onclick="deleteAll()">Hapus Semua</button>
+  </div>
+
+  <table id="data-table">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Tanggal</th>
+        <th>Nama</th>
+        <th>Alamat</th>
+        <th>Kelas</th>
+        <th>Kebutuhan</th>
+        <th>No WA</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbywo2WXyF5HUGm_vG07sRFN1uroIkayMzywNm6kpxxli67I_hIe0Ainrop-f6hvBI6d/exec'; // ← ganti dengan URL Web App kamu
+
+    async function fetchData() {
+      const response = await fetch(scriptURL);
+      const data = await response.json();
+
+      const tbody = document.querySelector('#data-table tbody');
+      tbody.innerHTML = '';
+
+      data.forEach((row, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${row['TANGGAL'] || ''}</td>
+          <td>${row['NAMA']}</td>
+          <td>${row['ALAMAT']}</td>
+          <td>${row['KELAS']}</td>
+          <td>${row['KEBUTUHAN']}</td>
+          <td>${row['NO WA']}</td>
+          <td><button onclick="deleteRow(${row.rowIndex})">Hapus</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function deleteRow(rowIndex) {
+      if (confirm('Yakin ingin menghapus baris ini?')) {
+        await fetch(`${scriptURL}?action=delete&rowIndex=${rowIndex}`);
+        fetchData();
+      }
+    }
+
+    async function deleteAll() {
+      if (confirm('Yakin ingin menghapus semua data?')) {
+        const response = await fetch(scriptURL);
+        const data = await response.json();
+        for (const row of data.reverse()) {
+          await fetch(`${scriptURL}?action=delete&rowIndex=${row.rowIndex}`);
+        }
+        fetchData();
+      }
+    }
+
+    function downloadSheet() {
+      window.open('https://docs.google.com/spreadsheets/d/1-c0gWPa9FX8v5o83NclEn7GV_kcGQEiEnIoE3m6MySY/edit?gid=0#gid=0');
+    }
+
+    fetchData();
+  </script>
+</body>
+</html>
